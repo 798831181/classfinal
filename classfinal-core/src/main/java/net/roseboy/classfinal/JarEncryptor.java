@@ -3,8 +3,13 @@ package net.roseboy.classfinal;
 import javassist.ClassPool;
 import javassist.NotFoundException;
 import net.roseboy.classfinal.util.*;
+import net.roseboy.classfinal.xjar.XGo;
+import net.roseboy.classfinal.xjar.XKit;
+import net.roseboy.classfinal.xjar.key.XKey;
 
 import java.io.File;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 /**
@@ -58,6 +63,9 @@ public class JarEncryptor {
     private Integer encryptFileCount = null;
     //存储解析出来的类名和路径
     private Map<String, String> resolveClassName = new HashMap<>();
+
+    private XKey key;
+
 
     /**
      * 构造方法
@@ -121,17 +129,6 @@ public class JarEncryptor {
         });
         allFile.addAll(libJarFiles);
 
-        //压缩静态文件
-//        allFile.forEach(s -> {
-//            if (!s.endsWith(".ftl")) {
-//                return;
-//            }
-//            File file = new File(s);
-//            String code = IoUtils.readTxtFile(file);
-//            code = HtmlUtils.removeComments(code);
-//            code = HtmlUtils.removeBlankLine(code);
-//            IoUtils.writeTxtFile(file, code);
-//        });
 
         //[2]提取所有需要加密的class文件
         List<File> classFiles = filterClasses(allFile);
@@ -151,6 +148,17 @@ public class JarEncryptor {
 
         //[7]打包回去
         String result = packageJar(libJarFiles);
+
+//        8. 生成xjar.go启动器
+        try {
+            key = XKit.key(new String(password));
+            XGo.make(new File(result), key);
+        }catch (NoSuchAlgorithmException e) {
+            Log.debug("===============");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
 
         return result;
     }

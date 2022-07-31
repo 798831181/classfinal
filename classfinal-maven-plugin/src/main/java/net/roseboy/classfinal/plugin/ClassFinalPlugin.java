@@ -53,6 +53,12 @@ public class ClassFinalPlugin extends AbstractMojo {
     private Boolean debug;
 
     /**
+     * 生成JAR所在文件夹
+     */
+    @Parameter(property = "xjar.targetDir", required = true, defaultValue = "${project.build.directory}")
+    private File targetDir;
+
+    /**
      * 打包的时候执行
      *
      * @throws MojoExecutionException MojoExecutionException
