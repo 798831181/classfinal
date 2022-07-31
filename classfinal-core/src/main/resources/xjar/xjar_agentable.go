@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 )
 
 var xJar = XJar{
@@ -64,6 +65,8 @@ func main() {
 		xKey.ivsize, {13, 10},
 		xKey.password, {13, 10},
 	}, []byte{})
+	nArgs := strings.Replace(args[0], "passwd", string(xKey.password), -1)
+    args[0] = nArgs
 	cmd := exec.Command(java, args...)
 	cmd.Stdin = bytes.NewReader(key)
 	cmd.Stdout = os.Stdout
